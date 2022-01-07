@@ -174,17 +174,18 @@ func SquashEffect():
 
 func HandleParticles():
 	#running dust
-	if(animatedSprite.animation == "RUN"):
-		if(animatedSprite.frame == 0 && !hasAlreadyEmitted):
-			EmitRunParticle()
-		elif(animatedSprite.frame != 0):
-			hasAlreadyEmitted = false
+	#if(animatedSprite.animation == "RUN"):
+		#if(animatedSprite.frame == 0 && !hasAlreadyEmitted):
+			#EmitRunParticle()
+		#elif(animatedSprite.frame != 0):
+			#hasAlreadyEmitted = false
 	
 	#landing from heights dust (proportional to fallspeed)
 	
 	#turning at speed dust
 	
 	#jump and double jump dust
+	pass
 
 func EmitRunParticle():
 	#calculate offset
