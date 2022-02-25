@@ -1,7 +1,17 @@
-[gd_scene load_steps=51 format=2]
+[gd_scene load_steps=63 format=2]
 
-[ext_resource path="res://Assets/Tileset.png" type="Texture" id=1]
-[ext_resource path="res://Scenes/Objects/Player.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Scenes/player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Assets/testing_tileset.png" type="Texture" id=2]
+[ext_resource path="res://Scripts/Dialogue/dialogue_manager.gd" type="Script" id=3]
+[ext_resource path="res://Scenes/interactable_npc.tscn" type="PackedScene" id=4]
+[ext_resource path="res://icon.png" type="Texture" id=5]
+[ext_resource path="res://Resources/Dialogues/test_dialogue_01.tres" type="Resource" id=6]
+[ext_resource path="res://Resources/runtime_data.tres" type="Resource" id=7]
+[ext_resource path="res://Resources/Dialogues/test_dialogue_02.tres" type="Resource" id=8]
+[ext_resource path="res://Assets/PoetsenOne-Regular.ttf" type="DynamicFontData" id=9]
+[ext_resource path="res://Assets/text_backer.png" type="Texture" id=10]
+[ext_resource path="res://Assets/text_box.png" type="Texture" id=11]
+[ext_resource path="res://Scenes/enemy.tscn" type="PackedScene" id=12]
 
 [sub_resource type="ConvexPolygonShape2D" id=1]
 points = PoolVector2Array( 0, 0, 16, 0, 16, 16, 0, 16 )
@@ -146,14 +156,14 @@ points = PoolVector2Array( 0, 0, 16, 0, 16, 16, 0, 16 )
 
 [sub_resource type="TileSet" id=48]
 0/name = "Tileset.png 0"
-0/texture = ExtResource( 1 )
+0/texture = ExtResource( 2 )
 0/tex_offset = Vector2( 0, 0 )
 0/modulate = Color( 1, 1, 1, 1 )
 0/region = Rect2( 0, 0, 176, 80 )
 0/tile_mode = 1
 0/autotile/bitmask_mode = 1
-0/autotile/bitmask_flags = [ Vector2( 0, 0 ), 432, Vector2( 0, 1 ), 438, Vector2( 0, 2 ), 54, Vector2( 0, 3 ), 48, Vector2( 1, 0 ), 504, Vector2( 1, 1 ), 511, Vector2( 1, 2 ), 63, Vector2( 1, 3 ), 56, Vector2( 2, 0 ), 216, Vector2( 2, 1 ), 219, Vector2( 2, 2 ), 27, Vector2( 2, 3 ), 24, Vector2( 3, 0 ), 144, Vector2( 3, 1 ), 146, Vector2( 3, 2 ), 18, Vector2( 3, 3 ), 16, Vector2( 4, 0 ), 176, Vector2( 4, 1 ), 182, Vector2( 4, 2 ), 434, Vector2( 4, 3 ), 50, Vector2( 4, 4 ), 178, Vector2( 5, 0 ), 248, Vector2( 5, 1 ), 255, Vector2( 5, 2 ), 507, Vector2( 5, 3 ), 59, Vector2( 5, 4 ), 251, Vector2( 6, 0 ), 440, Vector2( 6, 1 ), 447, Vector2( 6, 2 ), 510, Vector2( 6, 3 ), 62, Vector2( 6, 4 ), 446, Vector2( 7, 0 ), 152, Vector2( 7, 1 ), 155, Vector2( 7, 2 ), 218, Vector2( 7, 3 ), 26, Vector2( 7, 4 ), 446, Vector2( 8, 0 ), 184, Vector2( 8, 1 ), 191, Vector2( 8, 2 ), 506, Vector2( 8, 3 ), 58, Vector2( 8, 4 ), 186, Vector2( 9, 0 ), 443, Vector2( 9, 1 ), 254, Vector2( 9, 2 ), 442, Vector2( 9, 3 ), 190, Vector2( 10, 2 ), 250, Vector2( 10, 3 ), 187 ]
-0/autotile/icon_coordinate = Vector2( 0, 0 )
+0/autotile/bitmask_flags = [ Vector2( 0, 0 ), 432, Vector2( 0, 1 ), 438, Vector2( 0, 2 ), 54, Vector2( 0, 3 ), 48, Vector2( 1, 0 ), 504, Vector2( 1, 1 ), 511, Vector2( 1, 2 ), 63, Vector2( 1, 3 ), 56, Vector2( 2, 0 ), 216, Vector2( 2, 1 ), 219, Vector2( 2, 2 ), 27, Vector2( 2, 3 ), 24, Vector2( 3, 0 ), 144, Vector2( 3, 1 ), 146, Vector2( 3, 2 ), 18, Vector2( 3, 3 ), 16, Vector2( 4, 0 ), 176, Vector2( 4, 1 ), 182, Vector2( 4, 2 ), 434, Vector2( 4, 3 ), 50, Vector2( 4, 4 ), 178, Vector2( 5, 0 ), 248, Vector2( 5, 1 ), 255, Vector2( 5, 2 ), 507, Vector2( 5, 3 ), 59, Vector2( 5, 4 ), 251, Vector2( 6, 0 ), 440, Vector2( 6, 1 ), 447, Vector2( 6, 2 ), 510, Vector2( 6, 3 ), 62, Vector2( 6, 4 ), 446, Vector2( 7, 0 ), 152, Vector2( 7, 1 ), 155, Vector2( 7, 2 ), 218, Vector2( 7, 3 ), 26, Vector2( 7, 4 ), 154, Vector2( 8, 0 ), 184, Vector2( 8, 1 ), 191, Vector2( 8, 2 ), 506, Vector2( 8, 3 ), 58, Vector2( 8, 4 ), 186, Vector2( 9, 0 ), 443, Vector2( 9, 1 ), 254, Vector2( 9, 2 ), 442, Vector2( 9, 3 ), 190, Vector2( 10, 2 ), 250, Vector2( 10, 3 ), 187 ]
+0/autotile/icon_coordinate = Vector2( 3, 3 )
 0/autotile/tile_size = Vector2( 16, 16 )
 0/autotile/spacing = 0
 0/autotile/occluder_map = [  ]
@@ -452,15 +462,134 @@ points = PoolVector2Array( 0, 0, 16, 0, 16, 16, 0, 16 )
 } ]
 0/z_index = 0
 
+[sub_resource type="DynamicFont" id=49]
+size = 32
+font_data = ExtResource( 9 )
+
+[sub_resource type="DynamicFont" id=50]
+font_data = ExtResource( 9 )
+
 [node name="World" type="Node2D"]
 
-[node name="Player" parent="." instance=ExtResource( 2 )]
-position = Vector2( 159, 128 )
-jumpHeight = -185
-doubleJumpHeight = -170
+[node name="Player" parent="." instance=ExtResource( 1 )]
+_bounce_velocity = -100.0
+_dampening = 350.0
+_friction = 1500.0
 
 [node name="TileMap" type="TileMap" parent="."]
 tile_set = SubResource( 48 )
 cell_size = Vector2( 16, 16 )
 format = 1
-tile_data = PoolIntArray( 65548, 0, 196608, 65549, 0, 196609, 65550, 0, 196610, 196615, 0, 196608, 196616, 0, 196609, 196617, 0, 196610, 327682, 0, 196608, 327683, 0, 196609, 327684, 0, 196610, 327696, 0, 0, 327697, 0, 1, 327698, 0, 2, 393232, 0, 65536, 393233, 0, 65537, 393234, 0, 65538, 458765, 0, 0, 458766, 0, 1, 458767, 0, 1, 458768, 0, 131078, 458769, 0, 65537, 458770, 0, 65538, 524289, 0, 196608, 524290, 0, 196609, 524291, 0, 196609, 524292, 0, 6, 524293, 0, 1, 524294, 0, 1, 524295, 0, 1, 524296, 0, 1, 524297, 0, 1, 524298, 0, 1, 524299, 0, 1, 524300, 0, 1, 524301, 0, 131078, 524302, 0, 65537, 524303, 0, 65541, 524304, 0, 131073, 524305, 0, 131073, 524306, 0, 131074, 589828, 0, 131072, 589829, 0, 131073, 589830, 0, 131073, 589831, 0, 65542, 589832, 0, 65537, 589833, 0, 65537, 589834, 0, 65537, 589835, 0, 65537, 589836, 0, 65541, 589837, 0, 131073, 589838, 0, 131073, 589839, 0, 131074, 655367, 0, 131072, 655368, 0, 131073, 655369, 0, 131073, 655370, 0, 131073, 655371, 0, 131073, 655372, 0, 131074 )
+tile_data = PoolIntArray( 65548, 0, 196608, 65549, 0, 196609, 65550, 0, 196610, 65555, 0, 196608, 65556, 0, 196609, 65557, 0, 7, 65564, 0, 196611, 131093, 0, 196612, 131094, 0, 196610, 131103, 0, 196608, 131104, 0, 196610, 327682, 0, 196608, 327683, 0, 196609, 327684, 0, 196610, 327710, 0, 3, 327713, 0, 196608, 327714, 0, 196609, 327715, 0, 6, 327716, 0, 5, 327717, 0, 196609, 327718, 0, 196610, 393245, 0, 0, 393246, 0, 131079, 393251, 0, 65536, 393252, 0, 65538, 458764, 0, 0, 458765, 0, 2, 458768, 0, 3, 458773, 0, 3, 458777, 0, 0, 458778, 0, 1, 458779, 0, 1, 458780, 0, 1, 458781, 0, 131078, 458782, 0, 65538, 458787, 0, 65536, 458788, 0, 65538, 589822, 0, 196608, 589823, 0, 196609, 524288, 0, 196609, 524289, 0, 6, 524290, 0, 1, 524291, 0, 1, 524292, 0, 1, 524293, 0, 2, 524296, 0, 0, 524297, 0, 1, 524298, 0, 1, 524299, 0, 1, 524300, 0, 131078, 524301, 0, 65538, 524304, 0, 131075, 524309, 0, 131075, 524313, 0, 65540, 524314, 0, 131073, 524315, 0, 131073, 524316, 0, 131073, 524317, 0, 65542, 524318, 0, 262149, 524319, 0, 196609, 524320, 0, 196610, 524323, 0, 65536, 524324, 0, 65538, 589825, 0, 131072, 589826, 0, 131073, 589827, 0, 131073, 589828, 0, 131073, 589829, 0, 65543, 589832, 0, 65536, 589833, 0, 65537, 589834, 0, 65537, 589835, 0, 65537, 589836, 0, 65541, 589837, 0, 131074, 589849, 0, 65539, 589853, 0, 65536, 589854, 0, 65538, 589859, 0, 65536, 589860, 0, 65538, 655365, 0, 262148, 655366, 0, 196610, 655368, 0, 131072, 655369, 0, 131073, 655370, 0, 131073, 655371, 0, 131073, 655372, 0, 131074, 655385, 0, 65539, 655389, 0, 65536, 655390, 0, 65538, 655395, 0, 65536, 655396, 0, 65538, 720901, 0, 65539, 720921, 0, 65539, 720925, 0, 65536, 720926, 0, 65538, 720929, 0, 196608, 720930, 0, 196609, 720931, 0, 262150, 720932, 0, 65538, 786437, 0, 65539, 786457, 0, 65539, 786461, 0, 65536, 786462, 0, 65538, 786467, 0, 65536, 786468, 0, 65538, 851973, 0, 196612, 851974, 0, 196609, 851975, 0, 196609, 851976, 0, 196609, 851977, 0, 196609, 851978, 0, 196609, 851979, 0, 196609, 851980, 0, 196609, 851981, 0, 196609, 851982, 0, 196609, 851983, 0, 196609, 851984, 0, 196609, 851985, 0, 196609, 851986, 0, 196609, 851987, 0, 196609, 851988, 0, 196609, 851989, 0, 196609, 851990, 0, 196609, 851991, 0, 196609, 851992, 0, 196609, 851993, 0, 196615, 851997, 0, 65536, 851998, 0, 65538, 852003, 0, 65536, 852004, 0, 65538, 917533, 0, 65536, 917534, 0, 262149, 917535, 0, 196609, 917536, 0, 196610, 917539, 0, 65536, 917540, 0, 65538, 983069, 0, 65536, 983070, 0, 65538, 983075, 0, 65536, 983076, 0, 65538, 1048605, 0, 65536, 1048606, 0, 65538, 1048611, 0, 65536, 1048612, 0, 65538, 1114141, 0, 65536, 1114142, 0, 131077, 1114143, 0, 1, 1114144, 0, 1, 1114145, 0, 1, 1114146, 0, 1, 1114147, 0, 131078, 1114148, 0, 65538, 1179677, 0, 131072, 1179678, 0, 131073, 1179679, 0, 131073, 1179680, 0, 131073, 1179681, 0, 131073, 1179682, 0, 131073, 1179683, 0, 131073, 1179684, 0, 131074 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="DialogueUI" type="Control" parent="CanvasLayer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+_dialogue_text = NodePath("DialogueBox/DialogueText")
+_avatar = NodePath("DialogueBox/AvatarRect")
+_speaker_name = NodePath("DialogueBox/SpeakerName")
+_current_dialogue = ExtResource( 6 )
+_runtime_data = ExtResource( 7 )
+
+[node name="DialogueBox" type="TextureRect" parent="CanvasLayer/DialogueUI"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -256.0
+margin_top = -176.0
+margin_right = 256.0
+margin_bottom = -48.0
+texture = ExtResource( 11 )
+
+[node name="DialogueText" type="Label" parent="CanvasLayer/DialogueUI/DialogueBox"]
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = 40.0
+margin_top = -61.5
+margin_right = -40.0
+margin_bottom = 61.5
+custom_fonts/font = SubResource( 49 )
+text = "Dialogue Text"
+align = 1
+valign = 1
+autowrap = true
+clip_text = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AvatarRect" type="TextureRect" parent="CanvasLayer/DialogueUI/DialogueBox"]
+margin_left = -32.0
+margin_top = -32.0
+margin_right = 35.0
+margin_bottom = 35.0
+texture = ExtResource( 5 )
+stretch_mode = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SpeakerName" type="Label" parent="CanvasLayer/DialogueUI/DialogueBox"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -302.103
+margin_top = -84.9996
+margin_right = -206.103
+margin_bottom = -60.9996
+custom_fonts/font = SubResource( 50 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "Name"
+align = 1
+autowrap = true
+clip_text = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SpeakerBacking" type="ColorRect" parent="CanvasLayer/DialogueUI/DialogueBox/SpeakerName"]
+show_behind_parent = true
+margin_right = 96.0
+margin_bottom = 24.0
+color = Color( 0.12549, 0.12549, 0.12549, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="FadeBacking" type="TextureRect" parent="CanvasLayer/DialogueUI/DialogueBox"]
+show_behind_parent = true
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -512.0
+margin_top = -87.4998
+margin_right = 512.0
+margin_bottom = 112.5
+texture = ExtResource( 10 )
+stretch_mode = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="NPC" parent="." instance=ExtResource( 4 )]
+_dialogue = ExtResource( 8 )
+
+[node name="Enemy" parent="." instance=ExtResource( 12 )]
+position = Vector2( 209.897, 104 )
+
+[node name="Enemy3" parent="." instance=ExtResource( 12 )]
+position = Vector2( 264, 104 )
+
+[node name="Enemy4" parent="." instance=ExtResource( 12 )]
+position = Vector2( 344, 104 )

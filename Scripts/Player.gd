@@ -1,202 +1,171 @@
 extends KinematicBody2D
+###################################
+# To-Do's
+# CORE
+# Add delays to actions like jumping and ticking through dialogue
+# Particle system to signify movement, landing and jumping
+# Additional abilities such as dash, shield, double jump
+# 	(Restrict current double jump)
+#
+# OPTIONAL
+# Coyote time system - potentially identical to last OR new system
+# Add a small raycast (?) to determine an early-jump when near floor
+# Consider developing more animations and adding an animation tree
+###################################
 
-#attached nodes
-onready var animatedSprite = $AnimatedSprite
+# player mechanic values
+export(float) var _gravity = 400
+export(float) var _max_fall_speed = 400
+export(float) var _jump_strength = -175
+export(float) var _double_jump_strength = -175
+export(float) var _bounce_velocity = -100
+export(float) var _max_move_speed = 75
+export(float) var _dampening = 500
+export(float) var _acceleration = 700
+export(float) var _friction = 2000
 
-#particles
-export(PackedScene) var stepDust
-export(PackedScene) var jumpDust
-export(PackedScene) var fallDust
-export(PackedScene) var turnDust
-var hasAlreadyEmitted = false
+# references
+export(Resource) var _runtime_data = _runtime_data as RuntimeData
+export(NodePath) onready var _animator = get_node(_animator) as AnimationPlayer
+export(NodePath) onready var _sprite = get_node(_sprite) as Sprite
+export(NodePath) onready var _raycast = get_node(_raycast) as RayCast2D
 
-#modifiable values
-export(int) var gravity = 400
-export(int) var acceleration = 700
-export(int) var deceleration = 500
-export(int) var friction = 2000
-export(int) var currentFriction = 2000
-export(int) var maxHorizontalSpeed = 100
-export(int) var maxFallSpeed = 400
-export(int) var jumpHeight = -175
-export(int) var doubleJumpHeight = -150
-export(float) var squashSpeed = 0.3
+# public variables
+# private variables
+var _velocity: Vector2 = Vector2(0, 0)
+var _can_double_jump: bool = false
+var _started_fall: bool = false
+var _squash_speed: float = 0.3
+var _ray_length: int = 8
 
-#states
-enum {IS_GROUNDED, IS_AGAINST_WALL, IS_JUMPING, IS_DOUBLE_JUMPING, CAN_DOUBLE_JUMP, DOUBLE_JUMP_PRESSED, COYOTE_TIME}
-var state = [false, false, false, false, false, false, false]
 
-var playerSpeed = Vector2(0, 0)
-var motion = Vector2.ZERO
-
-#unlocked ability flags
-var unlocked_DoubleJump : bool = true
-var unlocked_FastFall : bool = true
-#var unlocked_Dash : bool = false
-
-func _ready():
-	pass
-
-#runs every frame at 60fps
+# built-in methods
 func _physics_process(delta):
-	CheckGrounding()
-	PlayerInput(delta)
-	HandleParticles()
-	ApplyPhysics(delta)
-
-#handle player grounding
-func CheckGrounding():
-	#check for coyote time on ground exit
-	if(state[IS_GROUNDED] && !is_on_floor()):
-		state[IS_GROUNDED] = false
-		state[COYOTE_TIME] = true
-		yield(get_tree().create_timer(0.2), "timeout")
-		state[COYOTE_TIME] = false
-	
-	#squash effect when landing
-	if(!state[IS_GROUNDED] && is_on_floor()):
-		animatedSprite.scale = Vector2(1.2, 0.8)
-	
-	#set grounding appropriately
-	state[IS_GROUNDED] = is_on_floor()
-	
-	if(state[IS_GROUNDED]):
-		state[IS_JUMPING] = false
-		state[CAN_DOUBLE_JUMP] = true
-		motion.y = 0
-		playerSpeed.y = 0
-
-#handle player input
-func PlayerInput(delta):
-	PlayerInputMovement(delta)
-	PlayerInputJump(delta)
-
-#handle player movement inputs
-func PlayerInputMovement(delta):
-	#RIGHT MOVEMENT
-	if(Input.get_joy_axis(0, 0) > 0.3) || Input.is_action_pressed("userRight"):
-		if(playerSpeed.x < -100):
-			playerSpeed.x += deceleration * delta
-			if(state[IS_GROUNDED]): pass #animatedSprite.play("TURN")
-		elif(playerSpeed.x < maxHorizontalSpeed):
-			playerSpeed.x += acceleration * delta
-			animatedSprite.flip_h = false
-			if(state[IS_GROUNDED]): animatedSprite.play("RUN")
-		else:
-			if(state[IS_GROUNDED]): animatedSprite.play("RUN")
-	#LEFT MOVEMENT
-	elif(Input.get_joy_axis(0, 0) < -0.3) || Input.is_action_pressed("userLeft"):
-		if(playerSpeed.x > 100):
-			playerSpeed.x -= deceleration * delta
-			if(state[IS_GROUNDED]): pass #animatedSprite.play("TURN")
-		elif(playerSpeed.x > -maxHorizontalSpeed):
-			playerSpeed.x -= acceleration * delta
-			animatedSprite.flip_h = true
-			if(state[IS_GROUNDED]): animatedSprite.play("RUN")
-		else:
-			if(state[IS_GROUNDED]): animatedSprite.play("RUN")
-	#ALL MOVEMENT STOPPED
+	if _runtime_data.current_gameplay_state == Enums.GameplayState.FREEWALK:
+		# player control
+		_handle_movement(delta)
+		_handle_jump()
+		
+		# keep animations separate from game logic
+		_handle_animations()
+		
+		# apply gravity
+		_apply_gravity(delta)
+		
+		# apply all changes this frame, stop grav accumulation
+		_velocity.y = move_and_slide(_velocity, Vector2.UP).y
+		
+		# handle player bouncing
+		_handle_bounce()
+		
 	else:
-		if(state[IS_GROUNDED]): animatedSprite.play("IDLE")
+		_pause_dialogue_animations()
+
+
+# private methods
+func _handle_movement(delta) -> void:
+	# push down if hitting head
+	if is_on_ceiling():
+		_velocity.y = 10
+	
+	if Input.is_action_pressed("move_right"):
+		# slide when turning at top speed
+		if _velocity.x < -_max_move_speed:
+			_velocity.x += _dampening * delta
+		# speed up when not at top speed
+		elif _velocity.x < _max_move_speed:
+			_velocity.x += _acceleration * delta 
+	elif Input.is_action_pressed("move_left"):
+		if _velocity.x > _max_move_speed:
+			_velocity.x -= _dampening * delta
+		elif _velocity.x > -_max_move_speed:
+			_velocity.x -= _acceleration * delta
+	else:
+		_velocity.x -= min(abs(_velocity.x), _friction * delta) \
+			* sign(_velocity.x)
+
+
+func _handle_jump() -> void:
+	if is_on_floor():
+		# initial jump
+		if Input.is_action_just_pressed("jump"):
+			_velocity.y = _jump_strength
+			_can_double_jump = true
+	else:
+		# variable jump
+		if _velocity.y < 0 and not Input.is_action_pressed("jump"):
+			_velocity.y = max(_velocity.y, _jump_strength / 2)
 			
-		#gradual slowdown
-		playerSpeed.x -= min(abs(playerSpeed.x), currentFriction * delta) * sign(playerSpeed.x)
+		# double jump
+		if Input.is_action_just_pressed("jump") and _can_double_jump:
+			_velocity.y = _double_jump_strength
+			_can_double_jump = false
 
-#handle player jump inputs
-func PlayerInputJump(delta):
-	if(state[COYOTE_TIME] && Input.is_action_just_pressed("userJump")):
-		playerSpeed.y = jumpHeight
-		state[IS_JUMPING] = true
-		state[CAN_DOUBLE_JUMP] = true
-	
-	#jump logic
-	if(state[IS_GROUNDED]):
-		if((Input.is_action_just_pressed("userJump") || state[DOUBLE_JUMP_PRESSED]) && !state[IS_JUMPING]):
-			playerSpeed.y = jumpHeight
-			state[IS_JUMPING] = true
-			state[IS_GROUNDED] = false
-			animatedSprite.scale = Vector2(0.5, 1.2) #stretch on jump
-			hasAlreadyEmitted = false
-	else: 
-		#variable jump height
-		if(playerSpeed.y < 0 && !Input.is_action_pressed("userJump") && !state[IS_DOUBLE_JUMPING]):
-			playerSpeed.y = max(playerSpeed.y, jumpHeight / 2)
+
+func _handle_bounce():
+	for i in get_slide_count():
+		var collision = get_slide_collision(i)
+		var collider = collision.collider
+		var is_stomping = (
+			collider is Enemy and
+			is_on_floor() and
+			collision.normal.is_equal_approx(Vector2.UP)
+		)
 		
-		#double jump
-		if(unlocked_DoubleJump && state[CAN_DOUBLE_JUMP] && Input.is_action_just_pressed("userJump") && !state[COYOTE_TIME]):
-			playerSpeed.y = doubleJumpHeight
-			animatedSprite.play("DOUBLEJUMP")
-			state[IS_DOUBLE_JUMPING] = true
-			state[CAN_DOUBLE_JUMP] = false
-			animatedSprite.scale = Vector2(0.7, 1.1) #stretch on jump
-		
-		#animation logic
-		if(!state[IS_DOUBLE_JUMPING] && playerSpeed.y < 0): animatedSprite.play("JUMPUP") #if rising
-		elif(!state[IS_DOUBLE_JUMPING] && playerSpeed.y > 0): animatedSprite.play("JUMPDOWN") #if falling
-		elif(state[IS_DOUBLE_JUMPING]): #&& animatedSprite.frame == 3
-			state[IS_DOUBLE_JUMPING] = false
-		
-		if(Input.is_action_just_pressed("userJump")):
-			state[DOUBLE_JUMP_PRESSED] = true
-			yield(get_tree().create_timer(0.2), "timeout")
-			state[DOUBLE_JUMP_PRESSED] = false
-		
-		#fast fall
-		if(unlocked_FastFall && !state[IS_GROUNDED] && Input.is_action_pressed("userDown")):
-			playerSpeed.y += (gravity * 1.1) * delta
+		if is_stomping:
+			_velocity.y = _bounce_velocity
+			(collider as Enemy).die()
 
-#apply physics calculations to player
-func ApplyPhysics(delta):
-	#bounce down if hit ceiling
-	if(is_on_ceiling()):
-		motion.y = 10
-		playerSpeed.y = 10
-	
-	#apply gravity and limit fall speed
-	playerSpeed.y += gravity * delta
-	playerSpeed.y = min(playerSpeed.y, maxFallSpeed)
-	
-	#update motion vector
-	motion.y = playerSpeed.y
-	motion.x = playerSpeed.x
-	
-	#apply motion
-	motion = move_and_slide(motion, Vector2.UP)
-	
-	#lerp squash effect
-	SquashEffect()
 
-#return player to normal scale
-func SquashEffect():
-	animatedSprite.scale.x = lerp(animatedSprite.scale.x, 1, squashSpeed)
-	animatedSprite.scale.y = lerp(animatedSprite.scale.y, 1, squashSpeed)
-	pass
+func _apply_gravity(delta) -> void:
+	_velocity.y += _gravity * delta
+	_velocity.y = min(_velocity.y, _max_fall_speed)
 
-func HandleParticles():
-	#running dust
-	#if(animatedSprite.animation == "RUN"):
-		#if(animatedSprite.frame == 0 && !hasAlreadyEmitted):
-			#EmitRunParticle()
-		#elif(animatedSprite.frame != 0):
-			#hasAlreadyEmitted = false
-	
-	#landing from heights dust (proportional to fallspeed)
-	
-	#turning at speed dust
-	
-	#jump and double jump dust
-	pass
 
-func EmitRunParticle():
-	#calculate offset
-	var particleOffset = 0
-	if(motion.x < 0): particleOffset = 2 #moving left
-	elif(motion.x > 0): particleOffset = -2 #moving right
-	else: particleOffset = 0 #not moving
+# potentially replace later with animation tree
+func _handle_animations() -> void:
+	# idle animation
+	if _velocity == Vector2.ZERO:
+		_animator.play("IDLE")
 	
-	#instantiate dust
-	var stepInst = stepDust.instance()
-	stepInst.emitting = true
-	stepInst.global_position = Vector2(global_position.x + particleOffset, global_position.y)
-	get_parent().add_child(stepInst)
-	hasAlreadyEmitted = true
+	# moving right or left
+	if _velocity.x > 0 and Input.is_action_pressed("move_right"):
+		_sprite.set_flip_h(false)
+		_raycast.set_cast_to(Vector2(_ray_length, 0))
+		if is_on_floor():
+			_animator.play("RUNNING")
+	
+	if _velocity.x < 0 and Input.is_action_pressed("move_left"):
+		_sprite.set_flip_h(true)
+		_raycast.set_cast_to(Vector2(-_ray_length, 0))
+		if is_on_floor():
+			_animator.play("RUNNING")
+	
+	# jumping
+	if Input.is_action_just_pressed("jump"):
+		_animator.play("JUMPING")
+	
+	# handle falling using a flag to prevent looping
+	if _started_fall == false and _velocity.y > 0:
+		_started_fall = true
+		_animator.play("FALLING")
+	elif is_on_floor():
+		# needs a fix to handle falling after double jump
+		_started_fall = false
+
+
+func _pause_dialogue_animations() -> void:
+	if _runtime_data.current_gameplay_state == Enums.GameplayState.IN_DIALOGUE:
+		_animator.stop(false)
+	else:
+		_animator.play()
+
+
+# sprite deformation effects [UNUSED]
+func _squash_effect() -> void:
+	_sprite.scale = Vector2(1.2, 0.8)
+func _stretch_effect() -> void:
+	_sprite.scale = Vector2(1.2, 0.6)
+func _undeform_sprite() -> void:
+	_sprite.scale.x = lerp(_sprite.scale.x, 1, _squash_speed)
+	_sprite.scale.y = lerp(_sprite.scale.y, 1, _squash_speed)

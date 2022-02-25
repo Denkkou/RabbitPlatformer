@@ -1,0 +1,10 @@
+[gd_resource type="Resource" load_steps=3 format=2]
+
+[ext_resource path="res://Scripts/Dialogue/dialogue.gd" type="Script" id=1]
+[ext_resource path="res://Assets/default_avatar.png" type="Texture" id=2]
+
+[resource]
+script = ExtResource( 1 )
+avatar_texture = ExtResource( 2 )
+speaker_name = "Bunny"
+dialogue_slides = [ "Hello, I am a rabbit.", "Good luck on your travels." ]
