@@ -472,7 +472,6 @@ font_data = ExtResource( 9 )
 [node name="World" type="Node2D"]
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
-_bounce_velocity = -100.0
 _dampening = 350.0
 _friction = 1500.0
 
